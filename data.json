@@ -1,30 +1,66 @@
 {
-    "artistes": [
-      {
-        "id": "1691763840951",
-        "nom": "Luna Melody",
-        "nombreDAbonnes": 120000,
-        "albums": [
-          {
-            "id": "1691763850521",
-            "nom": "Echoes of the Moon",
-            "dateDeCreation": "2023-11-01",
-            "sons": [
-              {
-                "id": "1691763860143",
-                "nom": "Moonlight Serenade",
-                "dateDeCreation": "2023-11-01",
-                "artiste": "Luna Melody",
-                "featuring": ["Solar Beats"],
-                "image": "url_image_son"
-              }
-            ],
-            "image": "url_image_album"
-          }
-        ],
-        "sons": [],
-        "image": "url_image_artiste"
-      }
-    ]
-  }
-  
+  "id": "1672679359133",
+  "nom": "Alice Harmony",
+  "nombreDAbonnes": 342530,
+  "albums": [
+    {
+      "id": "1672679359133253",
+      "nom": "Whispers of the Forest",
+      "dateDeCreation": "2021-08-15",
+      "sons": [
+        {
+          "id": "1672679359133874",
+          "nom": "Echoes in the Trees",
+          "dateDeCreation": "2021-08-20",
+          "artiste": "Alice Harmony",
+          "featuring": [],
+          "image": "https://source.unsplash.com/random/1"
+        },
+        {
+          "id": "1672679359133987",
+          "nom": "Morning Dew",
+          "dateDeCreation": "2021-08-25",
+          "artiste": "Alice Harmony",
+          "featuring": ["Liam Strings"],
+          "image": "https://source.unsplash.com/random/2"
+        }
+      ],
+      "image": "https://source.unsplash.com/random/3"
+    },
+    {
+      "id": "1672679359134789",
+      "nom": "Silent Dreams",
+      "dateDeCreation": "2022-04-10",
+      "sons": [
+        {
+          "id": "1672679359135451",
+          "nom": "Starry Night",
+          "dateDeCreation": "2022-04-15",
+          "artiste": "Alice Harmony",
+          "featuring": [],
+          "image": "https://source.unsplash.com/random/4"
+        }
+      ],
+      "image": "https://source.unsplash.com/random/5"
+    }
+  ],
+  "sons": [
+    {
+      "id": "1672679359136784",
+      "nom": "Solo Breeze",
+      "dateDeCreation": "2023-01-05",
+      "artiste": "Alice Harmony",
+      "featuring": [],
+      "image": "https://source.unsplash.com/random/6"
+    },
+    {
+      "id": "1672679359137891",
+      "nom": "Ocean Waves",
+      "dateDeCreation": "2023-02-10",
+      "artiste": "Alice Harmony",
+      "featuring": ["Ethan Sound"],
+      "image": "https://source.unsplash.com/random/7"
+    }
+  ],
+  "image": "https://source.unsplash.com/random/8"
+}

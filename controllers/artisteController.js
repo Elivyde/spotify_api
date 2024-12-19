@@ -1,31 +1,63 @@
-const Artiste = require('../models/Artiste');
+const fs = require('fs');
+const path = require('path');
+
+// Chemin vers le fichier JSON
+const dataPath = path.join(__dirname, '../data.json');
+
+// Lire les données du fichier JSON
+const readData = () => {
+  const data = fs.readFileSync(dataPath, 'utf8');
+  return JSON.parse(data);
+};
+
+// Écrire les données dans le fichier JSON
+const writeData = (data) => {
+  fs.writeFileSync(dataPath, JSON.stringify(data, null, 2));
+};
 
 // Créer un artiste
-exports.createArtiste = async (req, res) => {
+exports.createArtiste = (req, res) => {
   try {
-    const artiste = new Artiste(req.body);
-    await artiste.save();
-    res.status(201).json(artiste);
+    const data = readData();
+
+    const newArtiste = {
+      id: Date.now().toString(),
+      nom: req.body.nom,
+      nombreDAbonnes: req.body.nombreDAbonnes,
+      albums: [],
+      sons: [],
+      image: req.body.image
+    };
+
+    data.artistes.push(newArtiste);
+    writeData(data);
+
+    res.status(201).json(newArtiste);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(500).json({ error: error.message });
   }
 };
 
 // Récupérer tous les artistes
-exports.getArtistes = async (req, res) => {
+exports.getArtistes = (req, res) => {
   try {
-    const artistes = await Artiste.find();
-    res.json(artistes);
+    const data = readData();
+    res.json(data.artistes);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
 // Récupérer un artiste par ID
-exports.getArtisteById = async (req, res) => {
+exports.getArtisteById = (req, res) => {
   try {
-    const artiste = await Artiste.findById(req.params.id);
-    if (!artiste) return res.status(404).json({ message: 'Artiste non trouvé' });
+    const data = readData();
+    const artiste = data.artistes.find((artiste) => artiste.id === req.params.id);
+
+    if (!artiste) {
+      return res.status(404).json({ message: 'Artiste non trouvé' });
+    }
+
     res.json(artiste);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -33,21 +65,41 @@ exports.getArtisteById = async (req, res) => {
 };
 
 // Mettre à jour un artiste
-exports.updateArtiste = async (req, res) => {
+exports.updateArtiste = (req, res) => {
   try {
-    const artiste = await Artiste.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    if (!artiste) return res.status(404).json({ message: 'Artiste non trouvé' });
-    res.json(artiste);
+    const data = readData();
+    const artisteIndex = data.artistes.findIndex((artiste) => artiste.id === req.params.id);
+
+    if (artisteIndex === -1) {
+      return res.status(404).json({ message: 'Artiste non trouvé' });
+    }
+
+    data.artistes[artisteIndex] = {
+      ...data.artistes[artisteIndex],
+      ...req.body
+    };
+
+    writeData(data);
+
+    res.json(data.artistes[artisteIndex]);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(500).json({ error: error.message });
   }
 };
 
 // Supprimer un artiste
-exports.deleteArtiste = async (req, res) => {
+exports.deleteArtiste = (req, res) => {
   try {
-    const artiste = await Artiste.findByIdAndDelete(req.params.id);
-    if (!artiste) return res.status(404).json({ message: 'Artiste non trouvé' });
+    const data = readData();
+    const filteredArtistes = data.artistes.filter((artiste) => artiste.id !== req.params.id);
+
+    if (filteredArtistes.length === data.artistes.length) {
+      return res.status(404).json({ message: 'Artiste non trouvé' });
+    }
+
+    data.artistes = filteredArtistes;
+    writeData(data);
+
     res.json({ message: 'Artiste supprimé avec succès' });
   } catch (error) {
     res.status(500).json({ error: error.message });

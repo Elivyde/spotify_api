@@ -1,0 +1,30 @@
+{
+    "artistes": [
+      {
+        "id": "1691763840951",
+        "nom": "Luna Melody",
+        "nombreDAbonnes": 120000,
+        "albums": [
+          {
+            "id": "1691763850521",
+            "nom": "Echoes of the Moon",
+            "dateDeCreation": "2023-11-01",
+            "sons": [
+              {
+                "id": "1691763860143",
+                "nom": "Moonlight Serenade",
+                "dateDeCreation": "2023-11-01",
+                "artiste": "Luna Melody",
+                "featuring": ["Solar Beats"],
+                "image": "url_image_son"
+              }
+            ],
+            "image": "url_image_album"
+          }
+        ],
+        "sons": [],
+        "image": "url_image_artiste"
+      }
+    ]
+  }
+  

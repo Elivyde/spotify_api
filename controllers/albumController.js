@@ -1,12 +1,15 @@
-const Artiste = require('../models/Artiste');
+const { readData, writeData } = require('./artisteController');
 
 // Ajouter un album à un artiste
-exports.createAlbum = async (req, res) => {
+exports.createAlbum = (req, res) => {
   try {
-    const artiste = await Artiste.findById(req.params.artisteId);
+    const data = readData();
+    const artiste = data.artistes.find((artiste) => artiste.id === req.params.artisteId);
+
     if (!artiste) return res.status(404).json({ message: 'Artiste non trouvé' });
 
     const newAlbum = {
+      id: Date.now().toString(),
       nom: req.body.nom,
       dateDeCreation: req.body.dateDeCreation,
       sons: [],
@@ -14,67 +17,23 @@ exports.createAlbum = async (req, res) => {
     };
 
     artiste.albums.push(newAlbum);
-    await artiste.save();
+    writeData(data);
+
     res.status(201).json(newAlbum);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(500).json({ error: error.message });
   }
 };
 
-// Récupérer tous les albums d'un artiste
-exports.getAlbums = async (req, res) => {
+// Récupérer les albums d'un artiste
+exports.getAlbums = (req, res) => {
   try {
-    const artiste = await Artiste.findById(req.params.artisteId);
+    const data = readData();
+    const artiste = data.artistes.find((artiste) => artiste.id === req.params.artisteId);
+
     if (!artiste) return res.status(404).json({ message: 'Artiste non trouvé' });
+
     res.json(artiste.albums);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-// Récupérer un album spécifique
-exports.getAlbumById = async (req, res) => {
-  try {
-    const artiste = await Artiste.findById(req.params.artisteId);
-    if (!artiste) return res.status(404).json({ message: 'Artiste non trouvé' });
-
-    const album = artiste.albums.id(req.params.albumId);
-    if (!album) return res.status(404).json({ message: 'Album non trouvé' });
-    res.json(album);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-// Mettre à jour un album
-exports.updateAlbum = async (req, res) => {
-  try {
-    const artiste = await Artiste.findById(req.params.artisteId);
-    if (!artiste) return res.status(404).json({ message: 'Artiste non trouvé' });
-
-    const album = artiste.albums.id(req.params.albumId);
-    if (!album) return res.status(404).json({ message: 'Album non trouvé' });
-
-    album.set(req.body);
-    await artiste.save();
-    res.json(album);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-};
-
-// Supprimer un album
-exports.deleteAlbum = async (req, res) => {
-  try {
-    const artiste = await Artiste.findById(req.params.artisteId);
-    if (!artiste) return res.status(404).json({ message: 'Artiste non trouvé' });
-
-    const album = artiste.albums.id(req.params.albumId);
-    if (!album) return res.status(404).json({ message: 'Album non trouvé' });
-
-    album.remove();
-    await artiste.save();
-    res.json({ message: 'Album supprimé avec succès' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

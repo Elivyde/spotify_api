@@ -1,39 +1,47 @@
-const { readData, writeData } = require('./artisteController');
+const fs = require('fs');
+const path = require('path');
 
-// Ajouter un album à un artiste
+// Chemin vers le fichier JSON
+const dataPath = path.join(__dirname, '../data.json');
+
+// Lire les données depuis le fichier JSON
+const readData = () => {
+  const data = fs.readFileSync(dataPath, 'utf8');
+  return JSON.parse(data);
+};
+
+// Écrire les données dans le fichier JSON
+const writeData = (data) => {
+  fs.writeFileSync(dataPath, JSON.stringify(data, null, 2));
+};
+
+// Créer un album
 exports.createAlbum = (req, res) => {
   try {
     const data = readData();
-    const artiste = data.artistes.find((artiste) => artiste.id === req.params.artisteId);
-
-    if (!artiste) return res.status(404).json({ message: 'Artiste non trouvé' });
-
     const newAlbum = {
       id: Date.now().toString(),
       nom: req.body.nom,
       dateDeCreation: req.body.dateDeCreation,
-      sons: [],
+      description: req.body.description,
+      artisteId: req.body.artisteId,
       image: req.body.image
     };
 
-    artiste.albums.push(newAlbum);
+    data.albums.push(newAlbum);
     writeData(data);
-
     res.status(201).json(newAlbum);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
-// Récupérer les albums d'un artiste
-exports.getAlbums = (req, res) => {
+// Obtenir tous les albums d'un artiste
+exports.getAlbumsByArtiste = (req, res) => {
   try {
     const data = readData();
-    const artiste = data.artistes.find((artiste) => artiste.id === req.params.artisteId);
-
-    if (!artiste) return res.status(404).json({ message: 'Artiste non trouvé' });
-
-    res.json(artiste.albums);
+    const albums = data.albums.filter(album => album.artisteId === req.params.artisteId);
+    res.json(albums);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

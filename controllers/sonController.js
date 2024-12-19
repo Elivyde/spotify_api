@@ -4,7 +4,7 @@ const path = require('path');
 // Chemin vers le fichier JSON
 const dataPath = path.join(__dirname, '../data.json');
 
-// Lire les données du fichier JSON
+// Lire les données depuis le fichier JSON
 const readData = () => {
   const data = fs.readFileSync(dataPath, 'utf8');
   return JSON.parse(data);
@@ -15,92 +15,47 @@ const writeData = (data) => {
   fs.writeFileSync(dataPath, JSON.stringify(data, null, 2));
 };
 
-// Créer un artiste avec albums et sons indépendants
-exports.createArtiste = (req, res) => {
+// Créer un son
+exports.createSon = (req, res) => {
   try {
     const data = readData();
-
-    const newArtiste = {
-      id: Date.now().toString(), // ID unique
+    const newSon = {
+      id: Date.now().toString(),
       nom: req.body.nom,
-      nombreDAbonnes: req.body.nombreDAbonnes,
-      albums: [], // Albums initialement vides
-      sons: [],   // Sons indépendants initialement vides
+      dateDeCreation: req.body.dateDeCreation,
+      duree: req.body.duree,
+      featuring: req.body.featuring,
+      genre: req.body.genre,
+      albumId: req.body.albumId,
+      artisteId: req.body.artisteId,
       image: req.body.image
     };
 
-    data.artistes.push(newArtiste);
+    data.sons.push(newSon);
     writeData(data);
-
-    res.status(201).json(newArtiste);
+    res.status(201).json(newSon);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
-// Récupérer tous les artistes
-exports.getArtistes = (req, res) => {
+// Obtenir tous les sons d'un artiste
+exports.getSonsByArtiste = (req, res) => {
   try {
     const data = readData();
-    res.json(data.artistes);
+    const sons = data.sons.filter(son => son.artisteId === req.params.artisteId);
+    res.json(sons);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
-// Récupérer un artiste par ID
-exports.getArtisteById = (req, res) => {
+// Obtenir tous les sons d'un album
+exports.getSonsByAlbum = (req, res) => {
   try {
     const data = readData();
-    const artiste = data.artistes.find((artiste) => artiste.id === req.params.id);
-
-    if (!artiste) {
-      return res.status(404).json({ message: 'Artiste non trouvé' });
-    }
-
-    res.json(artiste);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-// Mettre à jour un artiste
-exports.updateArtiste = (req, res) => {
-  try {
-    const data = readData();
-    const artisteIndex = data.artistes.findIndex((artiste) => artiste.id === req.params.id);
-
-    if (artisteIndex === -1) {
-      return res.status(404).json({ message: 'Artiste non trouvé' });
-    }
-
-    data.artistes[artisteIndex] = {
-      ...data.artistes[artisteIndex],
-      ...req.body
-    };
-
-    writeData(data);
-
-    res.json(data.artistes[artisteIndex]);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-// Supprimer un artiste
-exports.deleteArtiste = (req, res) => {
-  try {
-    const data = readData();
-    const filteredArtistes = data.artistes.filter((artiste) => artiste.id !== req.params.id);
-
-    if (filteredArtistes.length === data.artistes.length) {
-      return res.status(404).json({ message: 'Artiste non trouvé' });
-    }
-
-    data.artistes = filteredArtistes;
-    writeData(data);
-
-    res.json({ message: 'Artiste supprimé avec succès' });
+    const sons = data.sons.filter(son => son.albumId === req.params.albumId);
+    res.json(sons);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

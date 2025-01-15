@@ -1,47 +1,59 @@
-const fs = require('fs');
-const path = require('path');
-
-// Chemin vers le fichier JSON
-const dataPath = path.join(__dirname, '../data.json');
-
-// Lire les données depuis le fichier JSON
-const readData = () => {
-  const data = fs.readFileSync(dataPath, 'utf8');
-  return JSON.parse(data);
-};
-
-// Écrire les données dans le fichier JSON
-const writeData = (data) => {
-  fs.writeFileSync(dataPath, JSON.stringify(data, null, 2));
-};
+const Album = require('../models/Album');
 
 // Créer un album
-exports.createAlbum = (req, res) => {
+exports.createAlbum = async (req, res) => {
   try {
-    const data = readData();
-    const newAlbum = {
-      id: Date.now().toString(),
-      nom: req.body.nom,
-      dateDeCreation: req.body.dateDeCreation,
-      description: req.body.description,
-      artisteId: req.body.artisteId,
-      image: req.body.image
-    };
-
-    data.albums.push(newAlbum);
-    writeData(data);
+    const { nom, dateDeCreation, description, artisteId, image } = req.body;
+    if (!nom || !dateDeCreation || !artisteId) {
+      return res.status(400).json({ error: 'Champs manquants ou invalides.' });
+    }
+    const newAlbum = new Album({ nom, dateDeCreation, description, artisteId, image });
+    await newAlbum.save();
     res.status(201).json(newAlbum);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
-// Obtenir tous les albums d'un artiste
-exports.getAlbumsByArtiste = (req, res) => {
+// Récupérer les albums d'un artiste
+exports.getAlbumsByArtiste = async (req, res) => {
   try {
-    const data = readData();
-    const albums = data.albums.filter(album => album.artisteId === req.params.artisteId);
+    const { artisteId } = req.params;
+    const albums = await Album.find({ artisteId });
     res.json(albums);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Récupérer un album par ID
+exports.getAlbumById = async (req, res) => {
+  try {
+    const album = await Album.findById(req.params.id).populate('artisteId');
+    if (!album) {
+      return res.status(404).json({ error: 'Album non trouvé.' });
+    }
+    res.json(album);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Mettre à jour un album
+exports.updateAlbum = async (req, res) => {
+  try {
+    const updatedAlbum = await Album.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    res.json(updatedAlbum);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Supprimer un album
+exports.deleteAlbum = async (req, res) => {
+  try {
+    const deletedAlbum = await Album.findByIdAndDelete(req.params.id);
+    res.json({ message: 'Album supprimé avec succès.' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

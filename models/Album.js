@@ -1,13 +1,15 @@
 const mongoose = require('mongoose');
 
-const albumSchema = new mongoose.Schema({
-  nom: { type: String, required: true }, // Nom de l'album
-  dateDeCreation: { type: Date, required: true }, // Date de sortie de l'album
-  description: { type: String }, // Description de l'album
-  artisteId: { type: mongoose.Schema.Types.ObjectId, ref: 'Artiste', required: true }, // Référence à l'artiste
-  image: { type: String } // URL de l'image de l'album
-});
+const AlbumSchema = new mongoose.Schema(
+  {
+    nom: { type: String, required: true },
+    dateDeCreation: { type: Date, required: true },
+    description: { type: String },
+    artisteId: { type: mongoose.Schema.Types.ObjectId, ref: 'Artiste', required: true },
+    image: { type: String },
+  },
+  { timestamps: true } // Ajoute les champs createdAt et updatedAt automatiquement
+);
 
-const Album = mongoose.model('Album', albumSchema);
-
+const Album = mongoose.model('Album', AlbumSchema);
 module.exports = Album;

@@ -1,61 +1,64 @@
-const fs = require('fs');
-const path = require('path');
-
-// Chemin vers le fichier JSON
-const dataPath = path.join(__dirname, '../data.json');
-
-// Lire les données depuis le fichier JSON
-const readData = () => {
-  const data = fs.readFileSync(dataPath, 'utf8');
-  return JSON.parse(data);
-};
-
-// Écrire les données dans le fichier JSON
-const writeData = (data) => {
-  fs.writeFileSync(dataPath, JSON.stringify(data, null, 2));
-};
+const Son = require('../models/Son');
 
 // Créer un son
-exports.createSon = (req, res) => {
+exports.createSon = async (req, res) => {
   try {
-    const data = readData();
-    const newSon = {
-      id: Date.now().toString(),
-      nom: req.body.nom,
-      dateDeCreation: req.body.dateDeCreation,
-      duree: req.body.duree,
-      featuring: req.body.featuring,
-      genre: req.body.genre,
-      albumId: req.body.albumId,
-      artisteId: req.body.artisteId,
-      image: req.body.image
-    };
-
-    data.sons.push(newSon);
-    writeData(data);
+    const { nom, dateDeCreation, duree, featuring, genre, albumId, artisteId, image } = req.body;
+    const newSon = new Son({ nom, dateDeCreation, duree, featuring, genre, albumId, artisteId, image });
+    await newSon.save();
     res.status(201).json(newSon);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
-// Obtenir tous les sons d'un artiste
-exports.getSonsByArtiste = (req, res) => {
+// Récupérer les sons d'un artiste
+exports.getSonsByArtiste = async (req, res) => {
   try {
-    const data = readData();
-    const sons = data.sons.filter(son => son.artisteId === req.params.artisteId);
+    const { artisteId } = req.params;
+    const sons = await Son.find({ artisteId });
     res.json(sons);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
-// Obtenir tous les sons d'un album
-exports.getSonsByAlbum = (req, res) => {
+// Récupérer les sons d'un album
+exports.getSonsByAlbum = async (req, res) => {
   try {
-    const data = readData();
-    const sons = data.sons.filter(son => son.albumId === req.params.albumId);
+    const { albumId } = req.params;
+    const sons = await Son.find({ albumId });
     res.json(sons);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Récupérer un son par ID
+exports.getSonById = async (req, res) => {
+  try {
+    const son = await Son.findById(req.params.id).populate('artisteId').populate('albumId');
+    res.json(son);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Mettre à jour un son
+exports.updateSon = async (req, res) => {
+  try {
+    const updatedSon = await Son.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    res.json(updatedSon);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Supprimer un son
+exports.deleteSon = async (req, res) => {
+  try {
+    const deletedSon = await Son.findByIdAndDelete(req.params.id);
+    res.json({ message: 'Son supprimé avec succès.' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

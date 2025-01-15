@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const cors = require('cors'); // Importer CORS
 const artisteRoutes = require('./routes/artistes');
 const albumRoutes = require('./routes/albums');
 const sonRoutes = require('./routes/sons');
@@ -7,6 +8,14 @@ require('dotenv').config();
 
 const app = express();
 app.use(express.json());
+
+// Configurer CORS
+const corsOptions = {
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+};
+app.use(cors(corsOptions));
 
 // Connexion à MongoDB
 mongoose

@@ -12,6 +12,16 @@ exports.createSon = async (req, res) => {
   }
 };
 
+// Récupérer tous les sons
+exports.getAllSons = async (req, res) => {
+  try {
+    const sons = await Son.find();
+    res.json(sons);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 // Récupérer les sons d'un artiste
 exports.getSonsByArtiste = async (req, res) => {
   try {

@@ -15,6 +15,16 @@ exports.createAlbum = async (req, res) => {
   }
 };
 
+// Récupérer tous les albums
+exports.getAllAlbums = async (req, res) => {
+  try {
+    const albums = await Album.find();
+    res.json(albums);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 // Récupérer les albums d'un artiste
 exports.getAlbumsByArtiste = async (req, res) => {
   try {

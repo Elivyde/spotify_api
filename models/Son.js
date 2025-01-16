@@ -10,15 +10,7 @@ const SonSchema = new mongoose.Schema(
     artisteId: { type: mongoose.Schema.Types.ObjectId, ref: 'Artiste', required: true },
     albumId: { type: mongoose.Schema.Types.ObjectId, ref: 'Album', default: null },
     image: { type: String },
-    url: {
-      type: String,
-      validate: {
-        validator: function (v) {
-          return !v || /^(ftp|http|https):\/\/[^ "]+$/.test(v);
-        },
-        message: props => `${props.value} n'est pas une URL valide.`,
-      },
-    },
+    url: { type: String },
   },
   { timestamps: true }
 );

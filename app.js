@@ -1,6 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const cors = require('cors'); // Importer CORS
+const cors = require('cors');
 const artisteRoutes = require('./routes/artistes');
 const albumRoutes = require('./routes/albums');
 const sonRoutes = require('./routes/sons');
@@ -23,7 +23,7 @@ mongoose
   .then(() => console.log('Connexion à MongoDB réussie'))
   .catch((error) => console.error('Erreur de connexion à MongoDB :', error));
 
-// Routes
+
 app.use('/api/artistes', artisteRoutes);
 app.use('/api/albums', albumRoutes);
 app.use('/api/sons', sonRoutes);
